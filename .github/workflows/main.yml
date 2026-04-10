@@ -13,17 +13,14 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-  docker_login:
-      runs-on: ubuntu-24.04
-      steps:
-      - name: Login to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
   application_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup]
+      needs: [jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build image and push application
         uses: docker/build-push-action@v6
         with:
@@ -32,10 +29,12 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   database_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup]
+      needs: [jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
@@ -44,10 +43,12 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   httpd_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup]
+      needs: [jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build image and httpd
         uses: docker/build-push-action@v6
         with:
