@@ -1,0 +1,5 @@
+  maven_test:
+      runs-on: ubuntu-24.04
+      steps:
+      - name: Build and test with Maven
+        run: mvn clean verify --file pom.xml

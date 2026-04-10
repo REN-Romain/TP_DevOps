@@ -18,11 +18,6 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-  maven_test:
-      runs-on: ubuntu-24.04
-      steps:
-      - name: Build and test with Maven
-        run: mvn clean verify --file pom.xml
   docker_login:
       runs-on: ubuntu-24.04
       steps:
@@ -30,6 +25,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
   application_image:
       runs-on: ubuntu-24.04
+      needs: docker_login
       steps:
       - name: Build image and push application
         uses: docker/build-push-action@v6
@@ -39,6 +35,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   database_image:
       runs-on: ubuntu-24.04
+      needs: docker_login
       steps:
       - name: Build image and push database
         uses: docker/build-push-action@v6
@@ -48,6 +45,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   httpd_image:
       runs-on: ubuntu-24.04
+      needs: docker_login
       steps:
       - name: Build image and httpd
         uses: docker/build-push-action@v6
@@ -57,6 +55,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   sonarcloud:
       runs-on: ubuntu-24.04
+      needs: jdk_setup
       steps:
       - name: Use sonarcloud
         run : mvn -B verify sonar:sonar -Dsonar.projectKey=REN-Romain_TP_DevOps -Dsonar.organization=ren-romain -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file pom.xml
