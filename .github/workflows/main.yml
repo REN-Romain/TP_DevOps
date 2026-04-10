@@ -24,13 +24,12 @@ jobs:
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-      - name: Build docker images
+      - name: Build image and push application
         uses: docker/build-push-action@v6
         with:
           context: .
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
-              
 
       - name: Build image and push database
         uses: docker/build-push-action@v6
@@ -46,3 +45,5 @@ jobs:
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
+      - name: Use sonarcloud
+        run : mvn  -B verify sonar:sonar -Dsonar.projectKey=REN-Romain_TP_DevOps -Dsonar.organization=ren-romain -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file .pom.xml
