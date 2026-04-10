@@ -20,7 +20,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
   application_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup, checkout_code]
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   database_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup, checkout_code]
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   httpd_image:
       runs-on: ubuntu-24.04
-      needs: [docker_login, jdk_setup, checkout_code]
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,7 +56,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   sonarcloud:
       runs-on: ubuntu-24.04
-      needs: [jdk_setup, checkout_code]
+      needs: [jdk_setup]
       steps:
       - name: Checkout code
         uses: actions/checkout@v4
