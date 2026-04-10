@@ -5,46 +5,58 @@ on:
   pull_request:
 
 jobs:
-  test-backend: 
+  checkout_code: 
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-     #do the same with another action (actions/setup-java@v4) that enable to setup jdk 21
+  jdk_setup: 
+    runs-on: ubuntu-24.04
+    steps:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-     #finally build your app with the latest command
+  maven_test:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Build and test with Maven
         run: mvn clean verify --file pom.xml
-  
+  docker_login:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
+  application_image:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Build image and push application
         uses: docker/build-push-action@v6
         with:
           context: .
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
-
+  database_image:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
           context: ./postgres
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
-
+  httpd_image:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Build image and httpd
         uses: docker/build-push-action@v6
         with:
           context: ./http
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
-
+  sonarcloud:
+      runs-on: ubuntu-24.04
+      steps:
       - name: Use sonarcloud
         run : mvn -B verify sonar:sonar -Dsonar.projectKey=REN-Romain_TP_DevOps -Dsonar.organization=ren-romain -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file pom.xml
-  
