@@ -25,7 +25,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
   application_image:
       runs-on: ubuntu-24.04
-      needs: docker_login, jdk_setup
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Build image and push application
         uses: docker/build-push-action@v6
@@ -35,7 +35,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   database_image:
       runs-on: ubuntu-24.04
-      needs: docker_login, jdk_setup
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Build image and push database
         uses: docker/build-push-action@v6
@@ -45,7 +45,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
   httpd_image:
       runs-on: ubuntu-24.04
-      needs: docker_login, jdk_setup
+      needs: [docker_login, jdk_setup]
       steps:
       - name: Build image and httpd
         uses: docker/build-push-action@v6
