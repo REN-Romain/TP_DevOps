@@ -8,16 +8,16 @@ jobs:
   maven:
       runs-on: ubuntu-24.04
       steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-      - name: Checkout code
-        uses: actions/checkout@v4
       - name: Build and push Maven
-        run: mvn clean verify
+        run : mvn clean verify
       - name: Use sonarcloud
         run : mvn -B verify sonar:sonar -Dsonar.projectKey=REN-Romain_TP_DevOps -Dsonar.organization=ren-romain -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file pom.xml
   application_image:
