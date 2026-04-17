@@ -33,10 +33,12 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/devops_app:latest
+          tags:  |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:${{ steps.vars.outputs.sha }}
           push: ${{ github.ref == 'refs/heads/main' }}
           cache-from: type=gha
-          cache-to: type=gha,mode=ma
+          cache-to: type=gha,mode=max
   database_image:
       runs-on: ubuntu-24.04
       steps:
@@ -46,14 +48,19 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Set version
+        id: vars
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build image and push database
         uses: docker/build-push-action@v6
         with:
           context: ./postgres
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/devops_postgres:latest
+          tags:  |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:${{ steps.vars.outputs.sha }}
           push: ${{ github.ref == 'refs/heads/main' }}
           cache-from: type=gha
-          cache-to: type=gha,mode=ma
+          cache-to: type=gha,mode=max
   httpd_image:
       runs-on: ubuntu-24.04
       steps:
@@ -67,7 +74,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./http
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/devops_proxy:latest
+          tags:  |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops_app:${{ steps.vars.outputs.sha }}
           push: ${{ github.ref == 'refs/heads/main' }}
           cache-from: type=gha
-          cache-to: type=gha,mode=ma
+          cache-to: type=gha,mode=max
