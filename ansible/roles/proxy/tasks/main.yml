@@ -7,5 +7,7 @@
       - "80:80"
     networks:
       - name: proxy-network
+    pull: true
+    recreate: true
     state: started
     restart_policy: always
