@@ -134,6 +134,7 @@ jobs:
       runs-on: ubuntu-24.04
       needs: [application_image, database_image, httpd_image, frontend_image]
       if: github.ref == 'refs/heads/main'
+      environment: production
       steps:
       - name: Checkout code
         uses: actions/checkout@v4

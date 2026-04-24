@@ -6,6 +6,6 @@
     ports:
       - "80:80"
     networks:
-      - name: app-network
+      - name: proxy-network
     state: started
     restart_policy: always
