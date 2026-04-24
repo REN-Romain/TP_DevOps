@@ -103,10 +103,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    runs-on: ubuntu-24.04
-    needs: [application_image, database_image, httpd_image]
-    if: github.ref == 'refs/heads/main'
-    steps:
+      runs-on: ubuntu-24.04
+      needs: [application_image, database_image, httpd_image]
+      if: github.ref == 'refs/heads/main'
+      steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Ansible
