@@ -1,0 +1,11 @@
+---
+- name: Launch proxy container
+  community.docker.docker_container:
+    name: apache
+    image: romainnn/devops_proxy:latest
+    ports:
+      - "80:80"
+    networks:
+      - name: app-network
+    state: started
+    restart_policy: always

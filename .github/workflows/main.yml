@@ -101,3 +101,24 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    runs-on: ubuntu-24.04
+    needs: [application_image, database_image, httpd_image]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Ansible
+        run: sudo apt update && sudo apt install -y ansible
+      - name: Install community.docker collection
+        run: ansible-galaxy collection install community.docker
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+      - name: Run Ansible playbook
+        run: ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "false"
