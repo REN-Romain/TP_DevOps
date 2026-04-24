@@ -1,0 +1,10 @@
+---
+- name: Launch front container
+  community.docker.docker_container:
+    name: front
+    image: romainnn/devops_front:latest
+    networks:
+      - name: proxy-network
+    pull: true
+    state: started
+    restart_policy: always

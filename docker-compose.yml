@@ -32,6 +32,15 @@ services:
       timeout: 5s
       retries: 5
 
+  front:
+    build: ./front
+    container_name: front
+    networks:
+      - proxy-network
+    depends_on:
+      backend:
+        condition: service_started
+
   httpd:
     build: ./http
     container_name: apache
@@ -40,7 +49,7 @@ services:
     networks:
       - proxy-network
     depends_on:
-      backend:
+      front:
         condition: service_started
 
 networks:
